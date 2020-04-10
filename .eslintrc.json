@@ -7,6 +7,7 @@
   },
   "rules": {
     "space-before-function-paren": ["error", "never"],
+    "semi": ["error", "never"],
     "max-len": ["error", { "code": 100 }],
     "no-unused-vars": [
       "error",
@@ -17,6 +18,8 @@
     ]
   },
   "globals": {
+    "Ball": true,
+
     "p5": false,
     "remove": false,
     "setup": false,
