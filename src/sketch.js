@@ -8,6 +8,22 @@ socket.onmessage = event => {
 
   if (!state) return
 
+  if (keyIsDown(LEFT_ARROW)) {
+    move('LEFT')
+  }
+
+  if (keyIsDown(RIGHT_ARROW)) {
+    move('RIGHT')
+  }
+
+  if (keyIsDown(UP_ARROW)) {
+    move('UP')
+  }
+
+  if (keyIsDown(DOWN_ARROW)) {
+    move('DOWN')
+  }
+
   background(0)
 
   Object.entries(state.balls).forEach(([id, pos]) => {
@@ -30,24 +46,6 @@ socket.onopen = () => {
 function setup() {
   createCanvas(1000, 500)
   background(0)
-}
-
-function draw() {
-  if (keyIsDown(LEFT_ARROW)) {
-    move('LEFT')
-  }
-
-  if (keyIsDown(RIGHT_ARROW)) {
-    move('RIGHT')
-  }
-
-  if (keyIsDown(UP_ARROW)) {
-    move('UP')
-  }
-
-  if (keyIsDown(DOWN_ARROW)) {
-    move('DOWN')
-  }
 }
 
 function move(direction) {
