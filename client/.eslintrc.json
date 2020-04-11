@@ -18,6 +18,8 @@
     ]
   },
   "globals": {
+    "ENV": true,
+
     "Ball": true,
 
     "p5": false,

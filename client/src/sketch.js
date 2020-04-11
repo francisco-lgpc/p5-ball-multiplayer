@@ -1,4 +1,6 @@
-const socket = new WebSocket('ws://localhost:8999')
+const url = ENV.production ? 'wss://p5-ball-multiplayer.herokuapp.com/' : 'ws://localhost:8999'
+
+const socket = new WebSocket(url)
 
 socket.onmessage = event => {
   const data = JSON.parse(event.data);
