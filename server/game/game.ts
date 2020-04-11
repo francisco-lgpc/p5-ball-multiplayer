@@ -15,16 +15,16 @@ export class Game {
   move(id: string, data: { direction: string }) {
     switch (data.direction) {
       case "UP":
-        this.balls[id].pos.y -= 1;
+        this.balls[id].pos.y -= 3;
         break;
       case "DOWN":
-        this.balls[id].pos.y += 1;
+        this.balls[id].pos.y += 3;
         break;
       case "LEFT":
-        this.balls[id].pos.x -= 1;
+        this.balls[id].pos.x -= 3;
         break;
       case "RIGHT":
-        this.balls[id].pos.x += 1;
+        this.balls[id].pos.x += 3;
         break;
 
       default:

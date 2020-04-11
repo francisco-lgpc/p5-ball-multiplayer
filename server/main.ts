@@ -63,7 +63,7 @@ setInterval(() => {
 
     ws.send(new Message({ state: game.getState() }).json());
   });
-}, 50);
+}, 16);
 
 // ping
 setInterval(() => {
