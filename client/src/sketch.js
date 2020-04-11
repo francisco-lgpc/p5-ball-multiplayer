@@ -15,10 +15,7 @@ socket.onmessage = event => {
   })
 }
 
-function setup() {
-  createCanvas(1000, 500)
-  background(0)
-
+socket.onopen = () => {
   socket.send(JSON.stringify({
     payload: {
       command: "addBall",
@@ -28,6 +25,11 @@ function setup() {
       }
     }
   }))
+}
+
+function setup() {
+  createCanvas(1000, 500)
+  background(0)
 }
 
 function draw() {
