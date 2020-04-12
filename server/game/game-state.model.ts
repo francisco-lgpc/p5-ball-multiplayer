@@ -1,3 +1,5 @@
+import { BallData } from "./ball";
+
 export interface Pos {
   x: number;
   y: number;
@@ -5,6 +7,6 @@ export interface Pos {
 
 export interface GameState {
   balls: {
-    [id: string]: Pos;
+    [id: string]: BallData;
   };
 }

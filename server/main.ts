@@ -38,6 +38,18 @@ wss.on("connection", (ws: ExtWebSocket) => {
     }
   });
 
+  let lastUpdate = new Date().getTime();
+
+  
+  setInterval(() => {
+    const now = new Date().getTime();
+    const delta = now - lastUpdate;
+    lastUpdate = now;
+    game.moveBall(ws.id!, delta)
+
+    ws.send(new Message({ state: game.getState() }).json());
+  }, 1000 / 60);
+
   // check if clients are connected
   ws.isAlive = true;
 
@@ -56,14 +68,6 @@ wss.on("connection", (ws: ExtWebSocket) => {
   });
   ws.send(openConnectionMessage.json());
 });
-
-setInterval(() => {
-  wss.clients.forEach((ws: ExtWebSocket) => {
-    if (!ws.isAlive) return;
-
-    ws.send(new Message({ state: game.getState() }).json());
-  });
-}, 16);
 
 // ping
 setInterval(() => {

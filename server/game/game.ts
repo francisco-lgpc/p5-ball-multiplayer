@@ -1,8 +1,11 @@
 import { GameState, Pos } from "./game-state.model";
-import { Ball } from "./ball";
+import { Ball, BallData } from "./ball";
+import { Movement } from "./movement.model";
 
 export class Game {
   readonly balls: { [id: string]: Ball } = {};
+
+  readonly ballsData: { [id: string]: BallData } = {};
 
   addBall(id: string, data: Pos) {
     this.balls[id] = new Ball(id, data);
@@ -10,37 +13,25 @@ export class Game {
 
   removeBall(id: string) {
     delete this.balls[id];
+    delete this.ballsData[id];
   }
 
-  move(id: string, data: { direction: string }) {
-    switch (data.direction) {
-      case "UP":
-        this.balls[id].pos.y -= 3;
-        break;
-      case "DOWN":
-        this.balls[id].pos.y += 3;
-        break;
-      case "LEFT":
-        this.balls[id].pos.x -= 3;
-        break;
-      case "RIGHT":
-        this.balls[id].pos.x += 3;
-        break;
+  setMovement(id: string, movement: Movement) {
+    this.balls[id].movement = movement;
+  }
 
-      default:
-        break;
-    }
+  moveBall(id: string, delta: number) {
+    if (!this.balls[id]) return;
+
+    this.balls[id].move(delta);
+    this.updateBall(id);
   }
 
   getState(): GameState {
-    return {
-      balls: Object.values(this.balls).reduce(
-        (balls, ball) => ({
-          ...balls,
-          [ball.id]: ball.pos
-        }),
-        {}
-      )
-    };
+    return { balls: this.ballsData };
+  }
+
+  private updateBall(id: string): void {
+    this.ballsData[id] = this.balls[id].getData();
   }
 }

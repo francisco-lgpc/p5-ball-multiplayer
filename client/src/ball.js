@@ -1,12 +1,11 @@
 class Ball {
-  constructor(r, x, y) {
+  constructor(r, pos) {
     this.r = r
-    this.x = x
-    this.y = y
+    this.pos = pos
   }
 
   show() {
     fill(255)
-    ellipse(this.x, this.y, this.r, this.r)
+    ellipse(this.pos.x, this.pos.y, this.r, this.r)
   }
 }
