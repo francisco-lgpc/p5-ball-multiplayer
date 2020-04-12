@@ -2,36 +2,35 @@ const url = ENV.production ? 'wss://p5-ball-multiplayer.herokuapp.com/' : 'ws://
 
 const socket = new WebSocket(url)
 
+let socketConnected = false
+
+let balls = {}
+
+const movement = {
+  UP: false,
+  DOWN: false,
+  LEFT: false,
+  RIGHT: false
+}
+
 socket.onmessage = event => {
   const data = JSON.parse(event.data);
   const state = data.state;
 
   if (!state) return
 
-  if (keyIsDown(LEFT_ARROW)) {
-    move('LEFT')
-  }
-
-  if (keyIsDown(RIGHT_ARROW)) {
-    move('RIGHT')
-  }
-
-  if (keyIsDown(UP_ARROW)) {
-    move('UP')
-  }
-
-  if (keyIsDown(DOWN_ARROW)) {
-    move('DOWN')
-  }
-
-  background(0)
-
-  Object.entries(state.balls).forEach(([id, pos]) => {
-    new Ball(50, pos.x, pos.y).show();
+  Object.entries(state.balls).forEach(([id, ball]) => {
+    if (balls[id]) {
+      balls[id].pos = ball.pos
+    } else {
+      balls[id] = new Ball(50, ball.pos)
+    }
   })
 }
 
 socket.onopen = () => {
+  socketConnected = true
+
   socket.send(JSON.stringify({
     payload: {
       command: "addBall",
@@ -48,13 +47,30 @@ function setup() {
   background(0)
 }
 
-function move(direction) {
+function draw() {
+  background(0)
+
+  Object.values(balls).forEach(ball => {
+    ball.show()
+  })
+
+  if (frameCount % 3 === 0) {
+    movement.LEFT = keyIsDown(LEFT_ARROW)
+    movement.RIGHT = keyIsDown(RIGHT_ARROW)
+    movement.UP = keyIsDown(UP_ARROW)
+    movement.DOWN = keyIsDown(DOWN_ARROW)
+  
+    move()
+  }
+}
+
+function move() {
+  if (!socketConnected) return
+
   const message = {
     payload: {
-      command: 'move',
-      data: {
-        direction
-      }
+      command: 'setMovement',
+      data: movement
     }
   };
 
