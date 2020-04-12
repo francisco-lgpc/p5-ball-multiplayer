@@ -26,6 +26,12 @@ socket.onmessage = event => {
       balls[id] = new Ball(50, ball.pos)
     }
   })
+
+  Object.keys(balls).forEach(id => {
+    if (!state.balls[id]) {
+      delete balls[id]
+    }
+  })
 }
 
 socket.onopen = () => {
@@ -59,7 +65,7 @@ function draw() {
     movement.RIGHT = keyIsDown(RIGHT_ARROW)
     movement.UP = keyIsDown(UP_ARROW)
     movement.DOWN = keyIsDown(DOWN_ARROW)
-  
+
     move()
   }
 }
