@@ -6,6 +6,6 @@ class Ball {
 
   show() {
     fill(255)
-    ellipse(this.pos.x, this.pos.y, this.r, this.r)
+    ellipse(this.pos.x / 100, this.pos.y / 100, this.r, this.r)
   }
 }
