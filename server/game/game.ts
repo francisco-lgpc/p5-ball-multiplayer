@@ -20,18 +20,14 @@ export class Game {
     this.balls[id].movement = movement;
   }
 
-  moveBall(id: string, delta: number) {
+  updateBall(id: string, delta: number) {
     if (!this.balls[id]) return;
 
-    this.balls[id].move(delta);
-    this.updateBall(id);
+    this.balls[id].update(delta);
+    this.ballsData[id] = this.balls[id].getData();
   }
 
   getState(): GameState {
     return { balls: this.ballsData };
-  }
-
-  private updateBall(id: string): void {
-    this.ballsData[id] = this.balls[id].getData();
   }
 }

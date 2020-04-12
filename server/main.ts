@@ -1,6 +1,6 @@
-import * as express from "express";
-import * as http from "http";
-import * as WebSocket from "ws";
+import express from "express";
+import http from "http";
+import WebSocket from "ws";
 import { v4 } from "uuid";
 import { Message } from "./message.model";
 import { Game } from "./game/game";
@@ -45,7 +45,7 @@ wss.on("connection", (ws: ExtWebSocket) => {
     const now = new Date().getTime();
     const delta = now - lastUpdate;
     lastUpdate = now;
-    game.moveBall(ws.id!, delta)
+    game.updateBall(ws.id!, delta)
 
     ws.send(new Message({ state: game.getState() }).json());
   }, 1000 / 60);
