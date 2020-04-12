@@ -35,8 +35,8 @@ socket.onopen = () => {
     payload: {
       command: "addBall",
       data: {
-        x: 50,
-        y: 50
+        x: 5000,
+        y: 5000
       }
     }
   }))

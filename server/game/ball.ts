@@ -16,7 +16,7 @@ export class Ball {
   constructor(public readonly id: string, public pos: Pos) {}
 
   move(delta: number) {
-    const scale = 0.2 * delta;
+    const scale = Math.round(20 * delta);
 
     if (this.movement.UP) this.pos.y -= scale;
     if (this.movement.DOWN) this.pos.y += scale;
