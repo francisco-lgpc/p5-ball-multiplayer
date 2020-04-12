@@ -23,7 +23,7 @@ socket.onmessage = event => {
     if (balls[id]) {
       balls[id].pos = ball.pos
     } else {
-      balls[id] = new Ball(50, ball.pos)
+      balls[id] = new Ball(20, ball.pos)
     }
   })
 
