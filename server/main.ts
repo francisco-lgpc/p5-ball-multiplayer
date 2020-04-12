@@ -38,18 +38,6 @@ wss.on("connection", (ws: ExtWebSocket) => {
     }
   });
 
-  let lastUpdate = new Date().getTime();
-
-  
-  setInterval(() => {
-    const now = new Date().getTime();
-    const delta = now - lastUpdate;
-    lastUpdate = now;
-    game.updateBall(ws.id!, delta)
-
-    ws.send(new Message({ state: game.getState() }).json());
-  }, 1000 / 60);
-
   // check if clients are connected
   ws.isAlive = true;
 
@@ -60,7 +48,7 @@ wss.on("connection", (ws: ExtWebSocket) => {
   // remove ball on close
   ws.onclose = _event => {
     game.removeBall(ws.id!);
-  }
+  };
 
   // send immediatly a feedback to the incoming connection
   const openConnectionMessage = new Message({
@@ -68,6 +56,40 @@ wss.on("connection", (ws: ExtWebSocket) => {
   });
   ws.send(openConnectionMessage.json());
 });
+
+let lastUpdate = new Date().getTime();
+
+setInterval(() => {
+  const balls = Object.values(game.balls);
+  balls.forEach((ballA, i) => {
+    balls.slice(i + 1).forEach(ballB => {
+      if (ballA.collides(ballB)) {
+        const normal = ballA.getCollisionNormal(ballB);
+
+        const impulse = ballA.getCollisionImpulse(ballB, normal);
+        ballB.applyForce(impulse);
+        ballA.applyForce(impulse.clone().multiplyScalar(-1));
+
+        const posCorrection = ballA.getPositionalCorrection(ballB, normal);
+        ballB.applyForce(posCorrection);
+        ballA.applyForce(posCorrection.clone().multiplyScalar(-1));
+      }
+    });
+  });
+
+  const now = new Date().getTime();
+  const delta = now - lastUpdate;
+  lastUpdate = now;
+
+  balls.forEach(ball => {
+    game.updateBall(ball.id, delta);
+  });
+
+  const stateJson = new Message({ state: game.getState() }).json();
+  wss.clients.forEach((ws: ExtWebSocket) => {
+    ws.send(stateJson);
+  });
+}, 1000 / 60);
 
 // ping
 setInterval(() => {
