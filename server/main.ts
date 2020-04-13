@@ -4,6 +4,7 @@ import WebSocket from "ws";
 import { v4 } from "uuid";
 import { Message } from "./message.model";
 import { Game } from "./game/game";
+import { isCommand } from "./game/commands";
 
 const app = express();
 
@@ -31,7 +32,12 @@ wss.on("connection", (ws: ExtWebSocket) => {
 
       const { command, data } = message.payload!;
 
-      const fn = (game as any)[command];
+      if (!isCommand(command)) {
+        console.error(`Invalid command: ${command}`);
+        return;
+      }
+
+      const fn = game[command] as any;
       fn.apply(game, [ws.id, data]);
     } catch (error) {
       console.error(error);
