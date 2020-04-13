@@ -14,6 +14,10 @@ export class Ball {
     RIGHT: false
   };
 
+  private readonly maxSpeed = 200;
+  private readonly movePower = 15;
+  private readonly dragCoeficient = 0.97;
+
   public pos: Vector;
   private vel: Vector = new Vector(0, 0);
   private acc: Vector = new Vector(0, 0);
@@ -31,24 +35,28 @@ export class Ball {
     this.acc.add(force.divideScalar(this.mass));
   }
 
-  update(delta: number) {
-    const scale = Math.round(1 * delta);
+  update(delta: number, targetFPS = 60) {
+    if (this.movement.UP) this.applyForce(new Vector(0, -this.movePower));
+    if (this.movement.DOWN) this.applyForce(new Vector(0, this.movePower));
+    if (this.movement.LEFT) this.applyForce(new Vector(-this.movePower, 0));
+    if (this.movement.RIGHT) this.applyForce(new Vector(this.movePower, 0));
 
-    if (this.movement.UP) this.applyForce(new Vector(0, -scale));
-    if (this.movement.DOWN) this.applyForce(new Vector(0, scale));
-    if (this.movement.LEFT) this.applyForce(new Vector(-scale, 0));
-    if (this.movement.RIGHT) this.applyForce(new Vector(scale, 0));
+    const updateScale = delta * targetFPS / 1000;
 
-    this.vel.add(this.acc);
-    this.pos.add(this.vel);
+    this.vel.multiplyScalar(this.dragCoeficient ** updateScale);
 
-    this.vel.multiplyScalar(Math.pow(0.999, delta));
+    if (this.vel.lengthSq() > this.maxSpeed * this.maxSpeed) {
+      this.vel.normalize().multiplyScalar(this.maxSpeed)
+    }
+
+    this.vel.add(this.acc.clone().multiplyScalar(updateScale));
+    this.pos.add(this.vel.clone().multiplyScalar(updateScale));
 
     this.acc.multiplyScalar(0);
   }
 
   collides(other: Ball): boolean {
-    return this.pos.distanceSq(other.pos) <= Math.pow(this.r + other.r, 2);
+    return this.pos.distanceSq(other.pos) <= (this.r + other.r) ** 2;
   }
 
   getCollisionNormal(other: Ball): Vector {
