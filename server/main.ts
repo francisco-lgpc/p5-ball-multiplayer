@@ -60,30 +60,13 @@ wss.on("connection", (ws: ExtWebSocket) => {
 let lastUpdate = new Date().getTime();
 
 setInterval(() => {
-  const balls = Object.values(game.balls);
-  balls.forEach((ballA, i) => {
-    balls.slice(i + 1).forEach(ballB => {
-      if (ballA.collides(ballB)) {
-        const normal = ballA.getCollisionNormal(ballB);
-
-        const impulse = ballA.getCollisionImpulse(ballB, normal);
-        ballB.applyForce(impulse);
-        ballA.applyForce(impulse.clone().multiplyScalar(-1));
-
-        const posCorrection = ballA.getPositionalCorrection(ballB, normal);
-        ballB.applyForce(posCorrection);
-        ballA.applyForce(posCorrection.clone().multiplyScalar(-1));
-      }
-    });
-  });
+  game.resolveCollisions();
 
   const now = new Date().getTime();
   const delta = now - lastUpdate;
   lastUpdate = now;
 
-  balls.forEach(ball => {
-    game.updateBall(ball.id, delta);
-  });
+  game.updateBalls(delta);
 
   const stateJson = new Message({ state: game.getState() }).json();
   wss.clients.forEach((ws: ExtWebSocket) => {
