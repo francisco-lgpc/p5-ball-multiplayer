@@ -24,8 +24,8 @@ export class Ball {
     RIGHT: false
   };
 
-  private readonly maxSpeed: number = 80;
-  private readonly movePower: number = 5;
+  private readonly maxSpeed: number = 1000;
+  private readonly movePower: number = 10;
   private readonly dragCoeficient: number = 0.97;
 
   private readonly r: number = 2000;
@@ -59,13 +59,14 @@ export class Ball {
 
     const updateScale = (delta * targetFPS) / 1000;
 
+    this.vel.add(this.acc.clone().multiplyScalar(updateScale));
+
     this.vel.multiplyScalar(this.dragCoeficient ** updateScale);
 
     if (this.vel.lengthSq() > this.maxSpeed * this.maxSpeed) {
       this.vel.normalize().multiplyScalar(this.maxSpeed);
     }
 
-    this.vel.add(this.acc.clone().multiplyScalar(updateScale));
     this.pos.add(this.vel.clone().multiplyScalar(updateScale));
 
     this.acc.multiplyScalar(0);

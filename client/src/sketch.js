@@ -40,7 +40,10 @@ socket.onopen = () => {
   socket.send(JSON.stringify({
     payload: {
       command: 'addBall',
-      data: {},
+      data: {
+        movePower: 5,
+        maxSpeed: 400,
+      },
     },
   }))
 }
