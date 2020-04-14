@@ -40,16 +40,13 @@ socket.onopen = () => {
   socket.send(JSON.stringify({
     payload: {
       command: 'addBall',
-      data: {
-        x: 5000,
-        y: 5000,
-      },
+      data: {},
     },
   }))
 }
 
 function setup() {
-  createCanvas(1000, 500)
+  createCanvas(2000, 1000)
   background(0)
 }
 

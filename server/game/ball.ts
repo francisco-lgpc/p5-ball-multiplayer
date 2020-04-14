@@ -6,6 +6,16 @@ export interface BallData {
   pos: Pos;
 }
 
+export interface BallOptions {
+  pos: Pos;
+  maxSpeed?: number;
+  movePower?: number;
+  dragCoeficient?: number;
+  r?: number;
+  restitution?: number;
+  mass?: number;
+}
+
 export class Ball {
   public movement: Movement = {
     UP: false,
@@ -14,21 +24,27 @@ export class Ball {
     RIGHT: false
   };
 
-  private readonly maxSpeed = 200;
-  private readonly movePower = 15;
-  private readonly dragCoeficient = 0.97;
+  private readonly maxSpeed: number = 80;
+  private readonly movePower: number = 5;
+  private readonly dragCoeficient: number = 0.97;
+
+  private readonly r: number = 2000;
+  private readonly restitution: number = 0.3;
 
   public pos: Vector;
   private vel: Vector = new Vector(0, 0);
   private acc: Vector = new Vector(0, 0);
 
-  private readonly mass: number = 1;
-  private readonly invMass: number = 1 / this.mass;
-  private readonly r: number = 2000;
-  private readonly restitution = 0.3;
+  private readonly mass: number;
+  private readonly invMass: number;
 
-  constructor(public readonly id: string, posData: Pos) {
-    this.pos = Vector.fromObject(posData);
+  constructor(public readonly id: string, options: BallOptions) {
+    const { pos, ...otherOptions } = options;
+    Object.assign(this, otherOptions);
+
+    this.mass = options.mass || this.r / 2000;
+    this.invMass = 1 / this.mass;
+    this.pos = Vector.fromObject(options.pos || { x: 100000, y: 50000 });
   }
 
   applyForce(force: Vector) {
@@ -41,12 +57,12 @@ export class Ball {
     if (this.movement.LEFT) this.applyForce(new Vector(-this.movePower, 0));
     if (this.movement.RIGHT) this.applyForce(new Vector(this.movePower, 0));
 
-    const updateScale = delta * targetFPS / 1000;
+    const updateScale = (delta * targetFPS) / 1000;
 
     this.vel.multiplyScalar(this.dragCoeficient ** updateScale);
 
     if (this.vel.lengthSq() > this.maxSpeed * this.maxSpeed) {
-      this.vel.normalize().multiplyScalar(this.maxSpeed)
+      this.vel.normalize().multiplyScalar(this.maxSpeed);
     }
 
     this.vel.add(this.acc.clone().multiplyScalar(updateScale));
@@ -80,7 +96,8 @@ export class Ball {
     const e = Math.min(this.restitution, other.restitution);
 
     // Calculate impulse scalar
-    let impulseScalar = -(1 + e) * velAlongNormal / (this.invMass + other.invMass);
+    let impulseScalar =
+      (-(1 + e) * velAlongNormal) / (this.invMass + other.invMass);
 
     // return impulse vector
     return normal.clone().multiplyScalar(impulseScalar);
