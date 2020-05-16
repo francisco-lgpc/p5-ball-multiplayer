@@ -12,11 +12,13 @@
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "node-static": "^0.7.11"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ./*.js"
+    "lint": "eslint ./*.js",
+    "start": "static -a localhost -p 8000"
   },
   "repository": {
     "type": "git",
