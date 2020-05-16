@@ -23,6 +23,8 @@
     "ENV": true,
 
     "Ball": true,
+    "ChooseBall": true,
+    "socket": true,
 
     "p5": false,
     "remove": false,

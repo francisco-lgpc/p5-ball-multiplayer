@@ -23,7 +23,7 @@ socket.onmessage = event => {
     if (balls[id]) {
       balls[id].pos = ball.pos
     } else {
-      balls[id] = new Ball(20, ball.pos)
+      balls[id] = new Ball(ball.r, ball.pos)
     }
   })
 
@@ -36,25 +36,20 @@ socket.onmessage = event => {
 
 socket.onopen = () => {
   socketConnected = true
-
-  socket.send(JSON.stringify({
-    payload: {
-      command: 'addBall',
-      data: {
-        movePower: 5,
-        maxSpeed: 400,
-      },
-    },
-  }))
 }
 
 function setup() {
-  createCanvas(2000, 1000)
+  createCanvas(windowWidth, windowHeight)
   background(0)
 }
 
 function draw() {
   background(0)
+
+  if (ChooseBall.choosingBall) {
+    ChooseBall.showChooseBallMenu()
+    return
+  }
 
   Object.values(balls).forEach(ball => {
     ball.show()
@@ -67,6 +62,17 @@ function draw() {
     movement.DOWN = keyIsDown(DOWN_ARROW)
 
     move()
+  }
+}
+
+function mouseClicked(e) {
+  if (ChooseBall.choosingBall) {
+    ChooseBall.mouseClicked(e)
+  }
+}
+function mouseMoved(e) {
+  if (ChooseBall.choosingBall) {
+    ChooseBall.mouseMoved(e)
   }
 }
 

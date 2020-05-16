@@ -4,6 +4,7 @@ import Vector from "victor";
 
 export interface BallData {
   pos: Pos;
+  r: number;
 }
 
 export interface BallOptions {
@@ -42,7 +43,8 @@ export class Ball {
     const { pos, ...otherOptions } = options;
     Object.assign(this, otherOptions);
 
-    this.mass = options.mass || this.r / 2000;
+    this.mass = options.mass || (this.r / 2000) ** 2;
+
     this.invMass = 1 / this.mass;
     this.pos = Vector.fromObject(options.pos || { x: 100000, y: 50000 });
   }
@@ -52,10 +54,11 @@ export class Ball {
   }
 
   update(delta: number, targetFPS = 60) {
-    if (this.movement.UP) this.applyForce(new Vector(0, -this.movePower));
-    if (this.movement.DOWN) this.applyForce(new Vector(0, this.movePower));
-    if (this.movement.LEFT) this.applyForce(new Vector(-this.movePower, 0));
-    if (this.movement.RIGHT) this.applyForce(new Vector(this.movePower, 0));
+    const movForceLen = this.movePower * this.mass;
+    if (this.movement.UP) this.applyForce(new Vector(0, -movForceLen));
+    if (this.movement.DOWN) this.applyForce(new Vector(0, movForceLen));
+    if (this.movement.LEFT) this.applyForce(new Vector(-movForceLen, 0));
+    if (this.movement.RIGHT) this.applyForce(new Vector(movForceLen, 0));
 
     const updateScale = (delta * targetFPS) / 1000;
 
@@ -116,6 +119,6 @@ export class Ball {
   }
 
   getData(): BallData {
-    return { pos: { x: this.pos.x, y: this.pos.y } };
+    return { pos: { x: this.pos.x, y: this.pos.y }, r: this.r };
   }
 }
