@@ -1,14 +1,16 @@
 {
   "extends": ["standard"],
+  "parser": "babel-eslint",
   "env": {
-  "node": true,
-  "es6": true,
-  "browser": true
+    "node": true,
+    "es6": true,
+    "browser": true
   },
   "rules": {
     "space-before-function-paren": ["error", "never"],
     "semi": ["error", "never"],
     "max-len": ["error", { "code": 100 }],
+    "comma-dangle": ["error", "always-multiline"],
     "no-unused-vars": [
       "error",
       {
