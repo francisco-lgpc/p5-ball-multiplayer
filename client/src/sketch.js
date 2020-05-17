@@ -4,18 +4,18 @@ const socket = new WebSocket(url)
 
 let socketConnected = false
 
-let balls = {}
+const balls = {}
 
 const movement = {
   UP: false,
   DOWN: false,
   LEFT: false,
-  RIGHT: false
+  RIGHT: false,
 }
 
 socket.onmessage = event => {
-  const data = JSON.parse(event.data);
-  const state = data.state;
+  const data = JSON.parse(event.data)
+  const state = data.state
 
   if (!state) return
 
@@ -39,12 +39,12 @@ socket.onopen = () => {
 
   socket.send(JSON.stringify({
     payload: {
-      command: "addBall",
+      command: 'addBall',
       data: {
         x: 5000,
-        y: 5000
-      }
-    }
+        y: 5000,
+      },
+    },
   }))
 }
 
@@ -76,9 +76,9 @@ function move() {
   const message = {
     payload: {
       command: 'setMovement',
-      data: movement
-    }
-  };
+      data: movement,
+    },
+  }
 
   socket.send(JSON.stringify(message))
 }
