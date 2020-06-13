@@ -1,5 +1,5 @@
 import { GameState, Pos } from "./game-state.model";
-import { Ball, BallData } from "./ball";
+import { Ball, BallData, BallOptions } from "./ball";
 import { Movement } from "./movement.model";
 
 export class Game {
@@ -7,7 +7,7 @@ export class Game {
 
   readonly ballsData: { [id: string]: BallData } = {};
 
-  addBall(id: string, data: Pos): void {
+  addBall(id: string, data: BallOptions): void {
     this.balls[id] = new Ball(id, data);
   }
 

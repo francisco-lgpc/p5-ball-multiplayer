@@ -4,18 +4,18 @@ const socket = new WebSocket(url)
 
 let socketConnected = false
 
-let balls = {}
+const balls = {}
 
 const movement = {
   UP: false,
   DOWN: false,
   LEFT: false,
-  RIGHT: false
+  RIGHT: false,
 }
 
 socket.onmessage = event => {
-  const data = JSON.parse(event.data);
-  const state = data.state;
+  const data = JSON.parse(event.data)
+  const state = data.state
 
   if (!state) return
 
@@ -23,7 +23,7 @@ socket.onmessage = event => {
     if (balls[id]) {
       balls[id].pos = ball.pos
     } else {
-      balls[id] = new Ball(20, ball.pos)
+      balls[id] = new Ball(ball.r, ball.pos)
     }
   })
 
@@ -36,25 +36,20 @@ socket.onmessage = event => {
 
 socket.onopen = () => {
   socketConnected = true
-
-  socket.send(JSON.stringify({
-    payload: {
-      command: "addBall",
-      data: {
-        x: 5000,
-        y: 5000
-      }
-    }
-  }))
 }
 
 function setup() {
-  createCanvas(1000, 500)
+  createCanvas(windowWidth, windowHeight)
   background(0)
 }
 
 function draw() {
   background(0)
+
+  if (ChooseBall.choosingBall) {
+    ChooseBall.showChooseBallMenu()
+    return
+  }
 
   Object.values(balls).forEach(ball => {
     ball.show()
@@ -70,15 +65,26 @@ function draw() {
   }
 }
 
+function mouseClicked(e) {
+  if (ChooseBall.choosingBall) {
+    ChooseBall.mouseClicked(e)
+  }
+}
+function mouseMoved(e) {
+  if (ChooseBall.choosingBall) {
+    ChooseBall.mouseMoved(e)
+  }
+}
+
 function move() {
   if (!socketConnected) return
 
   const message = {
     payload: {
       command: 'setMovement',
-      data: movement
-    }
-  };
+      data: movement,
+    },
+  }
 
   socket.send(JSON.stringify(message))
 }

@@ -4,6 +4,17 @@ import Vector from "victor";
 
 export interface BallData {
   pos: Pos;
+  r: number;
+}
+
+export interface BallOptions {
+  pos: Pos;
+  maxSpeed?: number;
+  movePower?: number;
+  dragCoeficient?: number;
+  r?: number;
+  restitution?: number;
+  mass?: number;
 }
 
 export class Ball {
@@ -14,21 +25,28 @@ export class Ball {
     RIGHT: false
   };
 
-  private readonly maxSpeed = 200;
-  private readonly movePower = 15;
-  private readonly dragCoeficient = 0.97;
+  private readonly maxSpeed: number = 1000;
+  private readonly movePower: number = 10;
+  private readonly dragCoeficient: number = 0.97;
+
+  private readonly r: number = 2000;
+  private readonly restitution: number = 0.3;
 
   public pos: Vector;
   private vel: Vector = new Vector(0, 0);
   private acc: Vector = new Vector(0, 0);
 
-  private readonly mass: number = 1;
-  private readonly invMass: number = 1 / this.mass;
-  private readonly r: number = 2000;
-  private readonly restitution = 0.3;
+  private readonly mass: number;
+  private readonly invMass: number;
 
-  constructor(public readonly id: string, posData: Pos) {
-    this.pos = Vector.fromObject(posData);
+  constructor(public readonly id: string, options: BallOptions) {
+    const { pos, ...otherOptions } = options;
+    Object.assign(this, otherOptions);
+
+    this.mass = options.mass || (this.r / 2000) ** 2;
+
+    this.invMass = 1 / this.mass;
+    this.pos = Vector.fromObject(options.pos || { x: 100000, y: 50000 });
   }
 
   applyForce(force: Vector) {
@@ -36,20 +54,22 @@ export class Ball {
   }
 
   update(delta: number, targetFPS = 60) {
-    if (this.movement.UP) this.applyForce(new Vector(0, -this.movePower));
-    if (this.movement.DOWN) this.applyForce(new Vector(0, this.movePower));
-    if (this.movement.LEFT) this.applyForce(new Vector(-this.movePower, 0));
-    if (this.movement.RIGHT) this.applyForce(new Vector(this.movePower, 0));
+    const movForceLen = this.movePower * this.mass;
+    if (this.movement.UP) this.applyForce(new Vector(0, -movForceLen));
+    if (this.movement.DOWN) this.applyForce(new Vector(0, movForceLen));
+    if (this.movement.LEFT) this.applyForce(new Vector(-movForceLen, 0));
+    if (this.movement.RIGHT) this.applyForce(new Vector(movForceLen, 0));
 
-    const updateScale = delta * targetFPS / 1000;
+    const updateScale = (delta * targetFPS) / 1000;
+
+    this.vel.add(this.acc.clone().multiplyScalar(updateScale));
 
     this.vel.multiplyScalar(this.dragCoeficient ** updateScale);
 
     if (this.vel.lengthSq() > this.maxSpeed * this.maxSpeed) {
-      this.vel.normalize().multiplyScalar(this.maxSpeed)
+      this.vel.normalize().multiplyScalar(this.maxSpeed);
     }
 
-    this.vel.add(this.acc.clone().multiplyScalar(updateScale));
     this.pos.add(this.vel.clone().multiplyScalar(updateScale));
 
     this.acc.multiplyScalar(0);
@@ -80,7 +100,8 @@ export class Ball {
     const e = Math.min(this.restitution, other.restitution);
 
     // Calculate impulse scalar
-    let impulseScalar = -(1 + e) * velAlongNormal / (this.invMass + other.invMass);
+    let impulseScalar =
+      (-(1 + e) * velAlongNormal) / (this.invMass + other.invMass);
 
     // return impulse vector
     return normal.clone().multiplyScalar(impulseScalar);
@@ -98,6 +119,6 @@ export class Ball {
   }
 
   getData(): BallData {
-    return { pos: { x: this.pos.x, y: this.pos.y } };
+    return { pos: { x: this.pos.x, y: this.pos.y }, r: this.r };
   }
 }

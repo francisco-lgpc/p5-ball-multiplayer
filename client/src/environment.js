@@ -6,4 +6,4 @@ function getEnvironment() {
   }
 }
 
-const ENV = getEnvironment();
+const ENV = getEnvironment()

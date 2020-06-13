@@ -6,7 +6,6 @@ class Ball {
 
   show() {
     fill(255)
-    // stroke(255)
-    ellipse(this.pos.x / 100, this.pos.y / 100, this.r * 2, this.r * 2)
+    ellipse(this.pos.x / 100, this.pos.y / 100, (this.r / 100) * 2, (this.r / 100) * 2)
   }
 }
